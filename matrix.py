@@ -84,6 +84,8 @@ class Sheet:
 
     def _cell(self, cell):
         cell = re.match(r"([a-z]+)(\d+)", cell.lower())
+        if cell is None:
+            return (0, 0)
         col, row = cell.group(1, 2)
         return (self._coli(col) - 1, int(row) - 1)
 
