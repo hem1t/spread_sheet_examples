@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import re
+import re, json
 
 # Defining A 2D Array
 #
@@ -17,12 +17,13 @@ import re
 
 
 class Sheet:
-    def __init__(self, col, row):
-        # what you're providing is considered as sizes
-        # not index where it would end
-        self.col = col
-        self.row = row
-        self.Columns = [[None for _ in range(row)] for _ in range(col)]
+    def __init__(self, name):
+        with open(name, "r") as file:
+            sheet = file.read()
+            sheet = json.loads(sheet)
+        self.col = sheet["size"]["col"]
+        self.row = sheet["size"]["row"]
+        self.Columns = sheet["table"]
 
     def insert_col(self, at_col):
         # you can write like this
@@ -134,13 +135,14 @@ class Sheet:
         for col, val in entries:
             self.set(col, val)
 
+    def save(self, name):
+        with open(name, "w") as file:
+            file.write(json.dumps({"size": {"col": self.col, "row": self.row}, "table": self.Columns}))
+
 
 if __name__ == "__main__":
-    sheet = Sheet(3, 3)
-    sheet.set("A1", "Name")
-    sheet.set("B1", "Age")
-    sheet.set("C1", "Hobby")
-    sheet.make_entry([("A2", "hem1t"), ("B2", "NA"), ("C2", "coding")])
+    sheet = Sheet("example.json")
+    sheet.make_entry([("A3", "abara"), ("B3", "20"), ("C3", "cadabra")])
     print(sheet)
     sheet.insert_col(1)
     print("Ran: sheet.insert_col(1)\n", sheet, sep="")
@@ -151,3 +153,4 @@ if __name__ == "__main__":
     sheet.delete_row(1)
     print("Ran: sheet.delete_row(1)\n", sheet, sep="")
     print('\nRan: sheet.search("coding") returns ', sheet.search("coding"))
+    sheet.save("example_modified.json")
