@@ -3,6 +3,13 @@
 from bintrees import AVLTree
 import json, re
 
+## function to create seperate lines while printing
+def separate(col_lens):
+    line = ""
+    for l in col_lens:
+        line += "+" + ("-" * l)
+    return line
+
 def to_col(cell):
     cell = re.match(r"([a-z]+)(\d+)", cell.lower())
     if cell is None:
@@ -17,10 +24,8 @@ def to_col(cell):
 
 def _json_to_table(tree):
     table = AVLTree()
-    for row in tree.keys():
-        for cell in tree[row].keys():
-            key = cell + row
-            table.insert(key, tree[row][cell])
+    for key in tree.keys():
+        table.insert(key, tree[key])
     return table
 
 class Sheet:
@@ -62,6 +67,37 @@ class Sheet:
                 cells.append(item[0])
         return cells
 
+    ### Extras
+    def __str__(self):
+        # table start
+        col_lens = self._max_lens()
+        to_print = separate(col_lens) + "+\n"
+        for row in range(self.size["row"]):
+            for col in range(self.size["col"]):
+                cell = to_cell(col, row)
+                val = self.table.get(cell.upper()) or ""
+                l = len(val)
+                to_print += "| " + val + (" " * (col_lens[col] - l - 1))
+            to_print += "|\n" + separate(col_lens) + "+\n"
+        return to_print
+
+    def _max_lens(self):
+        column_widths = [3 for i in range(self.size["col"])]
+        for item in self.table.items():
+            col = to_col(item[0])[0]
+            column_widths[col] = max(column_widths[col], len(str(item[1])) + 2)
+        return column_widths
+
+    def make_entry(self, entries):
+        for col, val in entries:
+            self.set(col, val)
+
+    def save(self, file_path):
+        with open(file_path, "w") as f:
+            f.write(json.dumps({"size": self.size, "table": dict(self.table)}))
+
+
 if __name__ == "__main__":
     sheet = Sheet("example.json")
     print(sheet.table)
+    sheet.save("example1.json")
