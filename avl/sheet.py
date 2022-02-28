@@ -22,6 +22,22 @@ def to_col(cell):
         order += 1
     return sum - 1, int(row) - 1
 
+def to_cell(cl, row):
+    col = ""
+    cl += 1
+    #### REUSING
+    ### I know this might be badly written
+    ### will fix it later
+    while cl > 0:
+        i = cl % 27
+        if i == 0:
+            cl -= 26
+            continue
+        col = chr(i + 96) + col
+        cl = cl // 27
+    return col + str(row + 1)
+
+
 def _json_to_table(tree):
     table = AVLTree()
     for key in tree.keys():
@@ -75,14 +91,15 @@ class Sheet:
         for row in range(self.size["row"]):
             for col in range(self.size["col"]):
                 cell = to_cell(col, row)
-                val = self.table.get(cell.upper()) or ""
+                ### str is used for int values
+                val = str(self.table.get(cell.upper()) or "")
                 l = len(val)
                 to_print += "| " + val + (" " * (col_lens[col] - l - 1))
             to_print += "|\n" + separate(col_lens) + "+\n"
         return to_print
 
     def _max_lens(self):
-        column_widths = [3 for i in range(self.size["col"])]
+        column_widths = [3 for _ in range(self.size["col"])]
         for item in self.table.items():
             col = to_col(item[0])[0]
             column_widths[col] = max(column_widths[col], len(str(item[1])) + 2)
