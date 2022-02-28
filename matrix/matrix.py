@@ -70,10 +70,12 @@ class Sheet:
         self.row -= 1
 
     def search(self, value):
+        cells = []
         for col in range(self.col):
             for row in range(self.row):
                 if self.Columns[col][row] == value:
-                    return (col, row)
+                    cells.append((col, row))
+        return cells
 
     def set(self, cell, value):
         col, row = self._cell(cell)

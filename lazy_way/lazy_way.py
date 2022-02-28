@@ -14,6 +14,8 @@ def separate(col_lens):
 
 def to_col(cell):
     cell = re.match(r"([a-z]+)(\d+)", cell.lower())
+    if cell is None:
+        return (0, 0)
     col, row = cell.group(1, 2)
     sum = 0
     order = 0
@@ -55,9 +57,11 @@ class Table:
         self.table.delete(cell)
 
     def search(self, value):
+        cells = []
         for cell in self.table.keys():
             if self.table[cell] == value:
-                return cell
+                cells.append(cell)
+        return cells
 
     ### Extras
     def __str__(self):
