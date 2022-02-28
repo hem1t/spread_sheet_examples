@@ -51,17 +51,19 @@ class Sheet:
         self.table = _json_to_table(sheet["table"])
         self.size = sheet["size"]
 
-    def set(self, col, value):
+    def set(self, cell, value):
         "Treats table as mutable"
         # size check
-        (col, row) = to_col(col)
+        (col, row) = to_col(cell)
+        ## are lengths not indices
+        (col, row) = (col+1, row+1)
         ## update if greater
         if col > self.size["col"]:
             self.size["col"] = col
         if row > self.size["row"]:
             self.size["row"] = row
         # set
-        self.table.insert(col, value)
+        self.table.insert(cell, value)
 
     def insert(self, col, value):
         "Treats table as non-mutable, returns bool"
@@ -117,4 +119,5 @@ class Sheet:
 if __name__ == "__main__":
     sheet = Sheet("example.json")
     print(sheet.table)
+    sheet.make_entry([("A3", "Dummy_name"), ("B3", "N/A"), ("C3", "A"), ("E3", "N/A")])
     sheet.save("example1.json")
