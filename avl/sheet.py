@@ -69,7 +69,7 @@ class Sheet:
         if self.table.get(col) is not None:
             return False
         else:
-            self.table.insert(col, value)
+            self.set(col, value)
             return True
 
     def delete(self, col):
